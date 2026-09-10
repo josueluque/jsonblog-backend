@@ -43,7 +43,7 @@ class CommentServiceImplTest {
     }
 
     @Test
-    void getCommentsByPostId_mapeaLosComentariosDelPost() {
+    void getCommentsByPostId_whenServiceReturnsComments_returnsList() {
         when(restTemplate.getForObject(anyString(), eq(Comment[].class))).thenReturn(new Comment[]{
                 comment(1, 1, "comentario 1", "email1@test.com", "cuerpo 1"),
                 comment(2, 1, "comentario 2", "email2@test.com", "cuerpo 2")
@@ -57,7 +57,7 @@ class CommentServiceImplTest {
     }
 
     @Test
-    void getCommentsByPostId_devuelveListaVaciaCuandoLaRespuestaEsNull() {
+    void getCommentsByPostId_whenResponseIsNull_returnsEmptyList() {
         when(restTemplate.getForObject(anyString(), eq(Comment[].class))).thenReturn(null);
 
         List<Comment> result = commentService().getCommentsByPostId(1);
@@ -66,7 +66,7 @@ class CommentServiceImplTest {
     }
 
     @Test
-    void getCommentsByPosts_agrupaLosComentariosPorPostId() {
+    void getCommentsByPosts_whenMultiplePosts_groupsCommentsByPostId() {
         when(restTemplate.getForObject(anyString(), eq(Comment[].class)))
                 .thenReturn(new Comment[]{comment(1, 1, "c1", "e1", "b1")})
                 .thenReturn(new Comment[]{comment(2, 2, "c2", "e2", "b2")});
@@ -82,7 +82,7 @@ class CommentServiceImplTest {
     }
 
     @Test
-    void toCommentResponseDTO_mapeaSoloLosCamposEsperados() {
+    void toCommentResponseDTO_whenValidComment_mapsOnlyExpectedFields() {
         Comment comment = comment(3, 1, "nombre", "email@test.com", "cuerpo");
 
         CommentResponseDTO dto = commentService().toCommentResponseDTO(comment);
