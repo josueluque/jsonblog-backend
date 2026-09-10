@@ -39,7 +39,7 @@ class ControllerExceptionHandlerWebTest {
             new ExternalPostsServiceException(new RuntimeException("connection reset"));
 
     @Test
-    void getPostsDetail_responde500CuandoElServicioExternoFalla() throws Exception {
+    void getPostsDetail_whenExternalServiceFails_returnsInternalServerError() throws Exception {
         when(postService.getPosts(anyInt(), anyInt()))
                 .thenThrow(externalServiceError);
 
@@ -49,7 +49,7 @@ class ControllerExceptionHandlerWebTest {
     }
 
     @Test
-    void deletePostById_responde500CuandoElServicioExternoFalla() throws Exception {
+    void deletePostById_whenExternalServiceFails_returnsInternalServerError() throws Exception {
         doThrow(externalServiceError)
                 .when(postService).deletePostById(1);
 
@@ -59,7 +59,7 @@ class ControllerExceptionHandlerWebTest {
     }
 
     @Test
-    void deletePostById_responde404CuandoElPostNoExiste() throws Exception {
+    void deletePostById_whenPostNotFound_returnsNotFound() throws Exception {
         doThrow(new PostNotFoundException(999))
                 .when(postService).deletePostById(999);
 
