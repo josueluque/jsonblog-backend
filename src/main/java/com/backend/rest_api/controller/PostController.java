@@ -1,12 +1,12 @@
-package com.backend.rest_api.controllers;
+package com.backend.rest_api.controller;
 
 import com.backend.rest_api.domain.Comment;
 import com.backend.rest_api.domain.Post;
 import com.backend.rest_api.domain.User;
 import com.backend.rest_api.domain.dto.DetailResponseDTO;
-import com.backend.rest_api.services.CommentService;
-import com.backend.rest_api.services.PostService;
-import com.backend.rest_api.services.UserService;
+import com.backend.rest_api.service.impl.CommentServiceImpl;
+import com.backend.rest_api.service.PostService;
+import com.backend.rest_api.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -26,7 +26,7 @@ public class PostController {
     private static final Logger log = LoggerFactory.getLogger(PostService.class);
 
     private final PostService postService;
-    private final CommentService commentService;
+    private final CommentServiceImpl commentServiceImpl;
     private final UserService userService;
 
     @GetMapping("/posts")
@@ -44,15 +44,16 @@ public class PostController {
         List<Post> posts = postService.getPosts(page, size);
 
         if (posts.isEmpty()) {
-            log.info("No se obtuvieron post para la pagina {}", page);
             return ResponseEntity.noContent().build();
         }
 
-        Map<Integer, List<Comment>> postsComments = commentService.getCommentsByPosts(posts);
+        Map<Integer, List<Comment>> postsComments = commentServiceImpl.getCommentsByPosts(posts);
 
         Map<Integer, User> usersMap = userService.getUsersByPosts(posts);
 
-        return postService.getPostsDetail(posts, postsComments, usersMap);
+        List<DetailResponseDTO> postsDetail = postService.getPostsDetail(posts, postsComments, usersMap);
+
+        return ResponseEntity.ok(postsDetail);
     }
 
     @DeleteMapping("/posts/{id}")
@@ -66,6 +67,8 @@ public class PostController {
     public ResponseEntity<Void> deletePostById(
             @PathVariable int id
     ) {
-        return postService.deletePostById(id);
+        postService.deletePostById(id);
+
+        return ResponseEntity.noContent().build();
     }
 }
