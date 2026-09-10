@@ -19,9 +19,10 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler({
             PostsDetailException.class,
-            DeletePostException.class
+            DeletePostException.class,
+            ExternalPostsServiceException.class
     })
-    public ResponseEntity<Void> handleInternalErrors(DomainException e) {
+    public ResponseEntity<Void> handleInternalErrors(RuntimeException e) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 }
