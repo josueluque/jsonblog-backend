@@ -40,7 +40,7 @@ class UsersClientTest {
     }
 
     @Test
-    void getUserById_devuelveElUsuarioBuscado() {
+    void getUserById_whenServiceOk_returnsUser() {
         server.expect(requestTo(urlFor(USERS_BY_USER_ID_PATH.replace("{userId}", "1"))))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess(USER_JSON, MediaType.APPLICATION_JSON));
@@ -55,7 +55,7 @@ class UsersClientTest {
     }
 
     @Test
-    void getUserById_lanzaUserNotFoundCuandoResponde404() {
+    void getUserById_whenNotFound_throwsUserNotFoundException() {
         server.expect(requestTo(urlFor(USERS_BY_USER_ID_PATH.replace("{userId}", "999"))))
                 .andRespond(withStatus(HttpStatus.NOT_FOUND));
 
@@ -65,7 +65,7 @@ class UsersClientTest {
     }
 
     @Test
-    void getUserById_lanzaExcepcionExternaCuandoRespondeError() {
+    void getUserById_whenServiceFails_throwsExternalPostsServiceException() {
         server.expect(requestTo(urlFor(USERS_BY_USER_ID_PATH.replace("{userId}", "1"))))
                 .andRespond(withServerError());
 

@@ -41,7 +41,7 @@ class PostsClientTest {
     }
 
     @Test
-    void fetchAllPosts_devuelveElArregloDePosts() {
+    void fetchAllPosts_whenServiceOk_returnsArray() {
         server.expect(requestTo(urlFor(ALL_POSTS_PATH)))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess(POSTS_JSON, MediaType.APPLICATION_JSON));
@@ -56,7 +56,7 @@ class PostsClientTest {
     }
 
     @Test
-    void fetchAllPosts_lanzaExcepcionCuandoElServicioRespondeError() {
+    void fetchAllPosts_whenServiceFails_throwsExternalPostsServiceException() {
         server.expect(requestTo(urlFor(ALL_POSTS_PATH)))
                 .andRespond(withServerError());
 
@@ -66,7 +66,7 @@ class PostsClientTest {
     }
 
     @Test
-    void gestPostByPostId_devuelveElPostBuscado() {
+    void gestPostByPostId_whenServiceOk_returnsPost() {
         server.expect(requestTo(urlFor(POST_BY_ID_PATH.replace("{postId}", "5"))))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess(POST_JSON, MediaType.APPLICATION_JSON));
@@ -81,7 +81,7 @@ class PostsClientTest {
     }
 
     @Test
-    void gestPostByPostId_lanzaPostNotFoundCuandoResponde404() {
+    void gestPostByPostId_whenNotFound_throwsPostNotFoundException() {
         server.expect(requestTo(urlFor(POST_BY_ID_PATH.replace("{postId}", "999"))))
                 .andRespond(withStatus(org.springframework.http.HttpStatus.NOT_FOUND));
 
@@ -91,7 +91,7 @@ class PostsClientTest {
     }
 
     @Test
-    void gestPostByPostId_lanzaExcepcionExternaCuandoRespondeError() {
+    void gestPostByPostId_whenServiceFails_throwsExternalPostsServiceException() {
         server.expect(requestTo(urlFor(POST_BY_ID_PATH.replace("{postId}", "5"))))
                 .andRespond(withServerError());
 
@@ -101,7 +101,7 @@ class PostsClientTest {
     }
 
     @Test
-    void deletePostByPostId_noLanzaExcepcionCuandoElServicioRespondeOk() {
+    void deletePostByPostId_whenServiceOk_completes() {
         server.expect(requestTo(urlFor(POST_BY_ID_PATH.replace("{postId}", "5"))))
                 .andExpect(method(HttpMethod.DELETE))
                 .andRespond(withSuccess());
@@ -111,7 +111,7 @@ class PostsClientTest {
     }
 
     @Test
-    void deletePostByPostId_lanzaDeletePostExceptionCuandoElServicioRespondeError() {
+    void deletePostByPostId_whenServiceFails_throwsDeletePostException() {
         server.expect(requestTo(urlFor(POST_BY_ID_PATH.replace("{postId}", "5"))))
                 .andExpect(method(HttpMethod.DELETE))
                 .andRespond(withStatus(org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR));
