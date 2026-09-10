@@ -1,49 +1,109 @@
+# bh-rest-api
 
-# API REST
+API REST desarrollada en **Java y Spring Boot** que consume y procesa datos de
+[JSONPlaceholder](https://jsonplaceholder.typicode.com), un servicio público de
+prueba. Expone endpoints para listar publicaciones enriquecidas con comentarios
+y datos del autor (con paginacion) y para eliminar publicaciones, con manejo
+centralizado de errores y documentacion interactiva.
 
-_API REST que consume y procesa datos de [JSONPlaceholder](https://jsonplaceholder.typicode.com)._
+## Caracteristicas
 
-### 📋 Pre-requisitos 
+- Endpoint `GET /api/posts` con paginacion y enriquecimiento: cada post se devuelve junto con sus comentarios y los datos del usuario autor.
+- Endpoint `DELETE /api/posts/{id}` para eliminar una publicacion (simulado contra JSONPlaceholder).
+- Manejo centralizado de errores con `@RestControllerAdvice` (HTTP 404 y 500).
+- URLs del servicio externo configurables via `application.properties`.
+- Documentacion interactiva con Swagger UI.
+- Cobertura de tests unitarios y de integracion (JUnit 5, Mockito, MockRestServiceServer, MockMvc).
 
-_Asegurate de tener las siguientes herramientas, para este proyecto se usaron las siguiente versiones_
+## Stack tecnologico
 
-- Java 17 
-- Maven 3.9.4
-- SpringBoout 3.5.6
+| Tecnologia        | Uso                                                        |
+|-------------------|------------------------------------------------------------|
+| Java 17           | Lenguaje principal                                         |
+| Spring Boot 2.7.2 | Framework de la aplicacion                                 |
+| Maven + mvnw      | Gestion de dependencias y build (con Maven Wrapper)        |
+| Spring Web / MVC  | Endpoints REST                                             |
+| RestTemplate      | Cliente HTTP para consumir JSONPlaceholder                 |
+| Jackson / JSON    | Serializacion y deserializacion                            |
+| Lombok            | Reduccion de codigo repetitivo                              |
+| Springdoc OpenAPI | Documentacion y pruebas con Swagger UI                     |
+| Spring Boot Test  | JUnit 5, Mockito, MockRestServiceServer y MockMvc          |
 
+## Arquitectura
 
-### Instalación 🔧
+La aplicacion sigue una arquitectura en capas simple y desacoplada:
 
-_1) Clonar este repositorio_
 ```
+HTTP Request
+     │
+     ▼
+┌──────────────────────────────┐
+│        Controller            │  Recibe la peticion, valida params, responde JSON
+└──────────────┬───────────────┘
+               ▼
+┌──────────────────────────────┐
+│         Service              │  Logica de negocio, paginacion y armado del DTO
+└──────────────┬───────────────┘
+               ▼
+┌──────────────────────────────┐
+│  Client (RestTemplate)       │  Llamadas HTTP a JSONPlaceholder
+└──────────────┬───────────────┘
+               ▼
+        JSONPlaceholder
+```
+
+- **Controller**: maneja las solicitudes HTTP y devuelve respuestas JSON.
+- **Service**: contiene la logica de negocio (paginacion, enriquecimiento, conversion a DTO).
+- **Client / RestTemplate**: gestiona las llamadas a la API externa.
+- **DTOs**: exponen unicamente los datos necesarios en cada respuesta.
+- **ControllerAdvice**: centraliza los errores y los traduce a codigos HTTP adecuados (404 / 500).
+
+## Requisitos previos
+
+- **Java 17**
+- **Maven 3.9+** (o usar el Maven Wrapper incluido: `./mvnw`)
+
+## Instalacion y ejecucion
+
+```bash
 git clone https://github.com/josueluque/bh-rest-api.git
 cd bh-rest-api
-```
-_2) Instalar dependencias del proyecto_
-```
+
+# Compilar e instalar dependencias
 mvn clean install
-```
-_3) Ejecutar la aplicación_
-```
+
+# Ejecutar la aplicacion
 mvn spring-boot:run
 ```
 
-### 📚 Pruebas y documentación con Swagger 
+La aplicacion queda disponible en `http://localhost:8080`.
 
-Este proyecto expone su documentación de API usando Swagger UI.
-Una vez levantada la aplicación, podés acceder a la interfaz web en: http://localhost:8080/swagger-ui.html
+Swagger UI (documentacion interactiva de la API):
 
-
-##### Obtener posts paginados con comentarios y usuario
-```http
-GET /api/posts
+```
+http://localhost:8080/swagger-ui.html
 ```
 
-Ejemplo
+## Endpoints
+
+### GET /api/posts
+Devuelve los posts paginados, enriquecidos con sus comentarios y el usuario autor.
+
+```bash
+curl -X GET "http://localhost:8080/api/posts?page=0&size=10"
 ```
-curl -X GET 'http://localhost:8080/api/posts?page=2&size=8'
-```
-Estructura de respuesta Body
+
+| Parametro | Tipo | Default | Descripcion                |
+|-----------|------|---------|----------------------------|
+| `page`    | int  | 0       | Numero de pagina (0-based) |
+| `size`    | int  | 10      | Cantidad de posts por pagina |
+
+**Respuestas:**
+- `200 OK` con el listado de detalle.
+- `204 No Content` cuando no hay posts para la pagina solicitada.
+- `500 Internal Server Error` si falla la comunicacion con el servicio externo.
+
+**Ejemplo de respuesta:**
 ```json
 [
   {
@@ -69,41 +129,38 @@ Estructura de respuesta Body
 ]
 ```
 
-##### Eliminar un post por su id
+### DELETE /api/posts/{id}
+Elimina una publicacion (simulado contra JSONPlaceholder).
 
-```http
-DELETE /api/posts/{id}
-```
-Ejemplo
-```
+```bash
 curl -X DELETE "http://localhost:8080/api/posts/10"
 ```
-Respuestas posibles:
-- 204 No Content → Se eliminó correctamente (simulación)
-- 404 Not Found → No existe el post
-- 500 Internal Server Error → Error al llamar a la API externa
 
+**Respuestas:**
+- `204 No Content` cuando la publicacion se elimino correctamente.
+- `404 Not Found` cuando el post no existe.
+- `500 Internal Server Error` si falla la comunicacion con el servicio externo.
 
-### 🏗️ Descripción de la arquitectura 
-- Controller: Maneja solicitudes HTTP y devuelve respuestas JSON.
+## Testing
 
-- Service: Contiene la lógica y realiza llamadas a servicio externo.
+La suite cubre la capa de servicios (paginacion, DTOs), los clients HTTP contra
+JSONPlaceholder simulando escenarios de exito y error con `MockRestServiceServer`,
+y la capa web con `MockMvc` verificando el manejo de errores.
 
-- Client / RestTemplate: Gestiona llamadas a API externa (JSONPlaceholder).
+```bash
+mvn test
+```
 
-- DTOs: Transfieren únicamente los datos necesarios.
+Resultado actual: **28 tests**, todos en verde (JUnit 5 + Mockito + MockMvc).
 
-### 🛠️ Stack
-- Java 17 – Lenguaje de programación principal.
+## Estructura del proyecto
 
-- Maven 3.9.4 → Gestión de dependencias y compilación del proyecto.
-
-- Spring Boot 3.5.6 → Framework para desarrollo de la API REST.
-
-- RestTemplate → Cliente HTTP para consumir API externa.
-
-- Springdoc OpenAPI / Swagger UI  → Documentación y pruebas de los endpoints.
-
-- Jackson / JSON → Serialización y deserialización de datos JSON.
-
-- Spring Web / Spring MVC  → Para la creación de endpoints.
+```
+src/main/java/com/backend/rest_api/
+├── client/        RestTemplate clients para JSONPlaceholder
+├── controller/    Endpoints REST
+├── domain/        Entidades y DTOs de respuesta
+├── exception/     Excepciones de dominio y ControllerAdvice
+└── service/       Logica de negocio
+src/test/java/com/backend/rest_api/   Tests unitarios y de integracion
+```
