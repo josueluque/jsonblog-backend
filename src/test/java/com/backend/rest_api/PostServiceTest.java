@@ -42,7 +42,7 @@ class PostServiceTest {
     }
 
     @Test
-    void getPosts_devuelveTodosLosPostsCuandoSizeSuperaAlTotal() {
+    void getPosts_whenSizeCoversTotal_returnsAllPosts() {
         when(postsClient.fetchAllPosts()).thenReturn(new Post[]{
                 post(1, 1, "t1", "b1"),
                 post(2, 1, "t2", "b2"),
@@ -57,7 +57,7 @@ class PostServiceTest {
     }
 
     @Test
-    void getPosts_devuelvePaginaParcialCuandoHayMenosElementosQueSize() {
+    void getPosts_whenSizeSmallerThanTotal_returnsPartialPage() {
         when(postsClient.fetchAllPosts()).thenReturn(new Post[]{
                 post(1, 1, "t1", "b1"),
                 post(2, 2, "t2", "b2"),
@@ -73,7 +73,7 @@ class PostServiceTest {
     }
 
     @Test
-    void getPosts_devuelveListaVaciaCuandoLaPaginaEstaFueraDeRango() {
+    void getPosts_whenPageIsOutOfRange_returnsEmptyList() {
         when(postsClient.fetchAllPosts()).thenReturn(new Post[]{
                 post(1, 1, "t1", "b1"),
                 post(2, 2, "t2", "b2"),
@@ -86,7 +86,7 @@ class PostServiceTest {
     }
 
     @Test
-    void getPosts_devuelveListaVaciaCuandoElArregloExternoEstaVacio() {
+    void getPosts_whenExternalArrayEmpty_returnsEmptyList() {
         when(postsClient.fetchAllPosts()).thenReturn(new Post[0]);
 
         List<Post> result = postService().getPosts(0, 10);
@@ -95,7 +95,7 @@ class PostServiceTest {
     }
 
     @Test
-    void getPosts_devuelveListaVaciaCuandoElArregloExternoEsNull() {
+    void getPosts_whenExternalArrayIsNull_returnsEmptyList() {
         when(postsClient.fetchAllPosts()).thenReturn(null);
 
         List<Post> result = postService().getPosts(0, 10);
@@ -104,7 +104,7 @@ class PostServiceTest {
     }
 
     @Test
-    void toPostResponseDTO_mapeaSoloLosCamposEsperados() {
+    void toPostResponseDTO_whenValidPost_mapsOnlyExpectedFields() {
         Post post = post(7, 3, "titulo", "cuerpo");
 
         PostResponseDTO dto = postService().toPostResponseDTO(post);
