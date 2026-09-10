@@ -40,7 +40,7 @@ class UserServiceTest {
     }
 
     @Test
-    void toUserResponseDTO_mapeaSoloIdNameYEmail() {
+    void toUserResponseDTO_whenValidUser_mapsOnlyExpectedFields() {
         User user = user(1, "Leanne Graham", "Sincere@april.biz");
         user.setUsername("Bret");
         user.setPhone("1-770-736-8031");
@@ -53,7 +53,7 @@ class UserServiceTest {
     }
 
     @Test
-    void getUsersByPosts_noRepiteLlamadasParaElMismoUsuario() {
+    void getUsersByPosts_whenUsersRepeat_doesNotDuplicateCalls() {
         when(usersClient.getUserById(1)).thenReturn(user(1, "Leanne Graham", "Sincere@april.biz"));
         when(usersClient.getUserById(2)).thenReturn(user(2, "Ervin Howell", "Shanna@melissa.tv"));
 
