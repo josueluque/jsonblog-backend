@@ -143,15 +143,13 @@ curl -X DELETE "http://localhost:8080/api/posts/10"
 
 ## Testing
 
-La suite cubre la capa de servicios (paginacion, DTOs), los clients HTTP contra
-JSONPlaceholder simulando escenarios de exito y error con `MockRestServiceServer`,
-y la capa web con `MockMvc` verificando el manejo de errores.
+La suite de tests cubre la logica de negocio, los clients HTTP hacia
+JSONPlaceholder (simulando escenarios de exito y error) y la capa web con el
+manejo de errores.
 
 ```bash
 mvn test
 ```
-
-Resultado actual: **28 tests**, todos en verde (JUnit 5 + Mockito + MockMvc).
 
 ## Estructura del proyecto
 
