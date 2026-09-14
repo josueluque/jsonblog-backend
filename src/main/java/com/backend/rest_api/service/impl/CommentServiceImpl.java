@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -50,20 +52,23 @@ public class CommentServiceImpl {
 
     public Map<Integer, List<Comment>> getCommentsByPosts(List<Post> posts){
         log.info("Obteniendo comentarios para {} posts", posts.size());
-        Comment[] allComments = restTemplate.getForObject(baseUrl + comments, Comment[].class);
-
-        if (allComments == null || allComments.length == 0) {
-            log.info("No se obtuvieron comentarios del servicio externo");
-            return Map.of();
-        }
 
         Set<Integer> postIds = posts.stream()
                 .map(Post::getId)
                 .collect(Collectors.toSet());
 
-        Map<Integer, List<Comment>> commentsMap = Arrays.stream(allComments)
-                .filter(comment -> postIds.contains(comment.getPostId()))
-                .collect(Collectors.groupingBy(Comment::getPostId));
+        Map<Integer, List<Comment>> commentsMap = new HashMap<>();
+        postIds.forEach(postId -> commentsMap.put(postId, new ArrayList<>()));
+
+        Comment[] allComments = restTemplate.getForObject(baseUrl + comments, Comment[].class);
+
+        if (allComments != null) {
+            Arrays.stream(allComments)
+                    .filter(comment -> postIds.contains(comment.getPostId()))
+                    .forEach(comment -> commentsMap.get(comment.getPostId()).add(comment));
+        } else {
+            log.info("No se obtuvieron comentarios del servicio externo");
+        }
 
         log.info("Comentarios obtenidos exitosamente");
         return commentsMap;

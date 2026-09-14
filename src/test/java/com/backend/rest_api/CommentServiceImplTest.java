@@ -88,12 +88,28 @@ class CommentServiceImplTest {
     }
 
     @Test
-    void getCommentsByPosts_whenResponseIsNull_returnsEmptyMap() {
+    void getCommentsByPosts_whenResponseIsNull_returnsEmptyListsForPosts() {
         when(restTemplate.getForObject(anyString(), eq(Comment[].class))).thenReturn(null);
 
-        Map<Integer, List<Comment>> result = commentService().getCommentsByPosts(List.of(post(1)));
+        Map<Integer, List<Comment>> result = commentService().getCommentsByPosts(List.of(post(1), post(2)));
 
-        assertThat(result).isEmpty();
+        assertThat(result).hasSize(2);
+        assertThat(result.get(1)).isEmpty();
+        assertThat(result.get(2)).isEmpty();
+    }
+
+    @Test
+    void getCommentsByPosts_whenPostHasNoComments_keepsEmptyListForKey() {
+        when(restTemplate.getForObject(anyString(), eq(Comment[].class)))
+                .thenReturn(new Comment[]{comment(1, 1, "c1", "e1", "b1")});
+
+        List<Post> posts = List.of(post(1), post(2));
+
+        Map<Integer, List<Comment>> result = commentService().getCommentsByPosts(posts);
+
+        assertThat(result).hasSize(2);
+        assertThat(result.get(1)).hasSize(1);
+        assertThat(result.get(2)).isEmpty();
     }
 
     @Test
