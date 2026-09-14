@@ -12,15 +12,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class CommentServiceImpl {
     private final RestTemplate restTemplate;
     private final String baseUrl;
     private final String commentsByPostId;
+    private final String comments;
     private static final Logger log = LoggerFactory.getLogger(PostService.class);
 
     public CommentServiceImpl(
@@ -28,11 +30,14 @@ public class CommentServiceImpl {
             @Value("${jsonplaceholder.base-url:https://jsonplaceholder.typicode.com}")
             String baseUrl,
             @Value("${jsonplaceholder.commentsByPostId:/posts/{postId}/comments}")
-            String commentsByPostId
+            String commentsByPostId,
+            @Value("${jsonplaceholder.comments:/comments}")
+            String comments
     ) {
         this.restTemplate = restTemplate;
         this.baseUrl = baseUrl;
         this.commentsByPostId = commentsByPostId;
+        this.comments = comments;
     }
 
     public List<Comment> getCommentsByPostId(Integer postId) {
@@ -44,11 +49,22 @@ public class CommentServiceImpl {
 
 
     public Map<Integer, List<Comment>> getCommentsByPosts(List<Post> posts){
-        log.info("Obteniendo comentarios para   {} posts", posts.size());
-        Map<Integer, List<Comment>> commentsMap = new HashMap<>();
-        for (Post post : posts) {
-            commentsMap.put(post.getId(), getCommentsByPostId(post.getId()));
+        log.info("Obteniendo comentarios para {} posts", posts.size());
+        Comment[] allComments = restTemplate.getForObject(baseUrl + comments, Comment[].class);
+
+        if (allComments == null || allComments.length == 0) {
+            log.info("No se obtuvieron comentarios del servicio externo");
+            return Map.of();
         }
+
+        Set<Integer> postIds = posts.stream()
+                .map(Post::getId)
+                .collect(Collectors.toSet());
+
+        Map<Integer, List<Comment>> commentsMap = Arrays.stream(allComments)
+                .filter(comment -> postIds.contains(comment.getPostId()))
+                .collect(Collectors.groupingBy(Comment::getPostId));
+
         log.info("Comentarios obtenidos exitosamente");
         return commentsMap;
     }

@@ -28,7 +28,8 @@ class CommentServiceImplTest {
         return new CommentServiceImpl(
                 restTemplate,
                 "https://jsonplaceholder.typicode.com",
-                "/posts/{postId}/comments"
+                "/posts/{postId}/comments",
+                "/comments"
         );
     }
 
@@ -68,8 +69,11 @@ class CommentServiceImplTest {
     @Test
     void getCommentsByPosts_whenMultiplePosts_groupsCommentsByPostId() {
         when(restTemplate.getForObject(anyString(), eq(Comment[].class)))
-                .thenReturn(new Comment[]{comment(1, 1, "c1", "e1", "b1")})
-                .thenReturn(new Comment[]{comment(2, 2, "c2", "e2", "b2")});
+                .thenReturn(new Comment[]{
+                        comment(1, 1, "c1", "e1", "b1"),
+                        comment(2, 2, "c2", "e2", "b2"),
+                        comment(3, 5, "c3", "e3", "b3")
+                });
 
         List<Post> posts = List.of(post(1), post(2));
 
@@ -78,7 +82,18 @@ class CommentServiceImplTest {
         assertThat(result).hasSize(2);
         assertThat(result.get(1)).hasSize(1);
         assertThat(result.get(1).get(0).getId()).isEqualTo(1);
+        assertThat(result.get(2)).hasSize(1);
         assertThat(result.get(2).get(0).getId()).isEqualTo(2);
+        assertThat(result).doesNotContainKey(5);
+    }
+
+    @Test
+    void getCommentsByPosts_whenResponseIsNull_returnsEmptyMap() {
+        when(restTemplate.getForObject(anyString(), eq(Comment[].class))).thenReturn(null);
+
+        Map<Integer, List<Comment>> result = commentService().getCommentsByPosts(List.of(post(1)));
+
+        assertThat(result).isEmpty();
     }
 
     @Test
