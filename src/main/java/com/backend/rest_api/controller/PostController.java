@@ -4,6 +4,7 @@ import com.backend.rest_api.domain.Comment;
 import com.backend.rest_api.domain.Post;
 import com.backend.rest_api.domain.User;
 import com.backend.rest_api.domain.dto.DetailResponseDTO;
+import com.backend.rest_api.domain.dto.PageResponse;
 import com.backend.rest_api.service.impl.CommentServiceImpl;
 import com.backend.rest_api.service.PostService;
 import com.backend.rest_api.service.UserService;
@@ -37,15 +38,17 @@ public class PostController {
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
 
     })
-    public ResponseEntity<List<DetailResponseDTO>> getPostsDetail(
+    public ResponseEntity<PageResponse<DetailResponseDTO>> getPostsDetail(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        List<Post> posts = postService.getPosts(page, size);
+        PageResponse<Post> postsPage = postService.getPosts(page, size);
 
-        if (posts.isEmpty()) {
+        if (postsPage.getContent().isEmpty()) {
             return ResponseEntity.noContent().build();
         }
+
+        List<Post> posts = postsPage.getContent();
 
         Map<Integer, List<Comment>> postsComments = commentServiceImpl.getCommentsByPosts(posts);
 
@@ -53,7 +56,11 @@ public class PostController {
 
         List<DetailResponseDTO> postsDetail = postService.getPostsDetail(posts, postsComments, usersMap);
 
-        return ResponseEntity.ok(postsDetail);
+        PageResponse<DetailResponseDTO> response = new PageResponse<>(
+                postsPage.getPage(), postsPage.getSize(), postsPage.getTotalElements(),
+                postsPage.getTotalPages(), postsDetail, postsPage.getPrev(), postsPage.getNext());
+
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/posts/{id}")

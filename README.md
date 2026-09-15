@@ -99,34 +99,44 @@ curl -X GET "http://localhost:8080/api/posts?page=0&size=10"
 | `size`    | int  | 10      | Cantidad de posts por pagina |
 
 **Respuestas:**
-- `200 OK` con el listado de detalle.
+- `200 OK` con los metadatos de paginacion y el detalle de los posts.
 - `204 No Content` cuando no hay posts para la pagina solicitada.
 - `500 Internal Server Error` si falla la comunicacion con el servicio externo.
 
+El paginado se resuelve en el origen: la API consulta a JSONPlaceholder con `_page`/`_limit` y propaga `X-Total-Count`, devolviendo metadatos de paginacion y links `prev`/`next` (relativos).
+
 **Ejemplo de respuesta:**
 ```json
-[
-  {
-    "post": {
-      "id": 1,
-      "title": "titulo del post",
-      "body": "contenido del post"
-    },
-    "user": {
-      "id": 1,
-      "name": "Leanne Graham",
-      "email": "Sincere@april.biz"
-    },
-    "comments": [
-      {
+{
+  "page": 0,
+  "size": 10,
+  "totalElements": 100,
+  "totalPages": 10,
+  "content": [
+    {
+      "post": {
         "id": 1,
-        "name": "comentario",
-        "email": "email@ejemplo.com",
-        "body": "contenido del comentario"
-      }
-    ]
-  }
-]
+        "title": "titulo del post",
+        "body": "contenido del post"
+      },
+      "user": {
+        "id": 1,
+        "name": "Leanne Graham",
+        "email": "Sincere@april.biz"
+      },
+      "comments": [
+        {
+          "id": 1,
+          "name": "comentario",
+          "email": "email@ejemplo.com",
+          "body": "contenido del comentario"
+        }
+      ]
+    }
+  ],
+  "prev": null,
+  "next": "/api/posts?page=1&size=10"
+}
 ```
 
 ### DELETE /api/posts/{id}

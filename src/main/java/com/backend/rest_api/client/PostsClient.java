@@ -5,6 +5,9 @@ import com.backend.rest_api.exception.DeletePostException;
 import com.backend.rest_api.exception.ExternalPostsServiceException;
 import com.backend.rest_api.exception.PostNotFoundException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
@@ -37,6 +40,32 @@ public class PostsClient {
         } catch (RestClientException e){
             throw new ExternalPostsServiceException(e);
         }
+    }
+
+    public PagedPosts fetchPosts(int page, int size){
+        String url = baseUrl + allposts + "?_page={page}&_limit={limit}";
+
+        try {
+            ResponseEntity<Post[]> response = restTemplate.exchange(
+                    url, HttpMethod.GET, HttpEntity.EMPTY, Post[].class, page + 1, size);
+
+            Post[] posts = response.getBody();
+            return new PagedPosts(posts, extractTotalElements(response, posts));
+        } catch (RestClientException e){
+            throw new ExternalPostsServiceException(e);
+        }
+    }
+
+    private int extractTotalElements(ResponseEntity<Post[]> response, Post[] posts) {
+        String totalHeader = response.getHeaders().getFirst("X-Total-Count");
+        if (totalHeader != null) {
+            try {
+                return Integer.parseInt(totalHeader);
+            } catch (NumberFormatException ignored) {
+                // header invalido: se resuelve con el tamano del contenido recibido
+            }
+        }
+        return posts != null ? posts.length : 0;
     }
 
     public Post gestPostByPostId(Integer postId){
