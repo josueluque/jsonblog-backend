@@ -8,6 +8,7 @@ import com.backend.rest_api.service.PostService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -43,6 +44,7 @@ public class CommentServiceImpl {
     }
 
 
+    @Cacheable(cacheNames = "comments", key = "#posts.![id]")
     public Map<Integer, List<Comment>> getCommentsByPosts(List<Post> posts){
         log.info("Obteniendo comentarios para   {} posts", posts.size());
         Map<Integer, List<Comment>> commentsMap = new HashMap<>();

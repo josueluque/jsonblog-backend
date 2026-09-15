@@ -6,6 +6,7 @@ import com.backend.rest_api.domain.User;
 import com.backend.rest_api.domain.dto.UserResponseDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 
@@ -31,6 +32,7 @@ public class UserService {
         return usersClient.getUserById(userId);
     }
 
+    @Cacheable(cacheNames = "users", key = "#posts.![userId]")
     public Map<Integer, User> getUsersByPosts(List<Post> posts) {
         log.info("Obteniendo usuarios para {} posts", posts.size());
         Map<Integer, User> users = new HashMap<>();
