@@ -4,6 +4,8 @@ import com.backend.rest_api.domain.Post;
 import com.backend.rest_api.exception.DeletePostException;
 import com.backend.rest_api.exception.ExternalPostsServiceException;
 import com.backend.rest_api.exception.PostNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -15,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 
 @Component
 public class PostsClient {
+    private static final Logger log = LoggerFactory.getLogger(PostsClient.class);
     private final RestTemplate restTemplate;
     private final String baseUrl;
     private final String allposts;
@@ -60,9 +63,9 @@ public class PostsClient {
         String totalHeader = response.getHeaders().getFirst("X-Total-Count");
         if (totalHeader != null) {
             try {
-                return Integer.parseInt(totalHeader);
-            } catch (NumberFormatException ignored) {
-                // header invalido: se resuelve con el tamano del contenido recibido
+                return Integer.parseInt(totalHeader.trim());
+            } catch (NumberFormatException e) {
+                log.warn("Header X-Total-Count invalido '{}'. Se usara el tamano del contenido.", totalHeader);
             }
         }
         return posts != null ? posts.length : 0;

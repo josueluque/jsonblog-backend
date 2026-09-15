@@ -97,6 +97,38 @@ class PostsClientTest {
     }
 
     @Test
+    void fetchPosts_whenTotalHeaderNotNumeric_usesBodySize() {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("X-Total-Count", "abc");
+
+        server.expect(requestTo(urlFor(ALL_POSTS_PATH + "?_page=1&_limit=10")))
+                .andRespond(withSuccess(POSTS_JSON, MediaType.APPLICATION_JSON)
+                        .headers(responseHeaders));
+
+        PagedPosts result = postsClient.fetchPosts(0, 10);
+
+        assertThat(result.getPosts()).hasSize(2);
+        assertThat(result.getTotalElements()).isEqualTo(2);
+        server.verify();
+    }
+
+    @Test
+    void fetchPosts_whenTotalHeaderHasSpaces_parsesTrimmedValue() {
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.set("X-Total-Count", " 100 ");
+
+        server.expect(requestTo(urlFor(ALL_POSTS_PATH + "?_page=1&_limit=10")))
+                .andRespond(withSuccess(POSTS_JSON, MediaType.APPLICATION_JSON)
+                        .headers(responseHeaders));
+
+        PagedPosts result = postsClient.fetchPosts(0, 10);
+
+        assertThat(result.getPosts()).hasSize(2);
+        assertThat(result.getTotalElements()).isEqualTo(100);
+        server.verify();
+    }
+
+    @Test
     void fetchPosts_whenServiceFails_throwsExternalPostsServiceException() {
         server.expect(requestTo(urlFor(ALL_POSTS_PATH + "?_page=1&_limit=10")))
                 .andRespond(withServerError());

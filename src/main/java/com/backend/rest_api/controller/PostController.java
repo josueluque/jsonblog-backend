@@ -15,13 +15,17 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.constraints.Min;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api")
+@Validated
 public class PostController {
 
     private static final Logger log = LoggerFactory.getLogger(PostService.class);
@@ -39,8 +43,8 @@ public class PostController {
 
     })
     public ResponseEntity<PageResponse<DetailResponseDTO>> getPostsDetail(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "0") @Min(0) int page,
+            @RequestParam(defaultValue = "10") @Min(1) int size) {
 
         PageResponse<Post> postsPage = postService.getPosts(page, size);
 
