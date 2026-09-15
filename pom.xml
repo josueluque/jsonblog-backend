@@ -9,10 +9,10 @@
         <relativePath/>
     </parent>
     <groupId>com.backend</groupId>
-    <artifactId>rest-api</artifactId>
+    <artifactId>jsonblog-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>rest-api</name>
-    <description>API REST que consume JSONPlaceholder realizando operaciones Get y Delete.</description>
+    <name>jsonblog-backend</name>
+    <description>API REST de blog que consume JSONPlaceholder: posts con comentarios y usuario autor, paginado y con cache.</description>
     <url/>
     <licenses>
         <license/>

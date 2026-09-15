@@ -1,6 +1,6 @@
-# bh-rest-api
+# jsonblog-backend
 
-API REST desarrollada en **Java y Spring Boot** que consume y procesa datos de
+API REST de blog desarrollada en **Java y Spring Boot** que consume y procesa datos de
 [JSONPlaceholder](https://jsonplaceholder.typicode.com), un servicio público de
 prueba. Expone endpoints para listar publicaciones enriquecidas con comentarios
 y datos del autor (con paginacion) y para eliminar publicaciones, con manejo
@@ -66,8 +66,8 @@ HTTP Request
 ## Instalacion y ejecucion
 
 ```bash
-git clone https://github.com/josueluque/bh-rest-api.git
-cd bh-rest-api
+git clone https://github.com/josueluque/jsonblog-backend.git
+cd jsonblog-backend
 
 # Compilar e instalar dependencias
 mvn clean install
