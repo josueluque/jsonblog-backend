@@ -49,6 +49,27 @@ class ControllerExceptionHandlerWebTest {
     }
 
     @Test
+    void getPostsDetail_whenSizeIsZero_returnsBadRequest() throws Exception {
+        mockMvc.perform(get("/api/posts").param("size", "0"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(""));
+    }
+
+    @Test
+    void getPostsDetail_whenSizeIsNegative_returnsBadRequest() throws Exception {
+        mockMvc.perform(get("/api/posts").param("size", "-5"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(""));
+    }
+
+    @Test
+    void getPostsDetail_whenPageIsNegative_returnsBadRequest() throws Exception {
+        mockMvc.perform(get("/api/posts").param("page", "-1"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(""));
+    }
+
+    @Test
     void deletePostById_whenExternalServiceFails_returnsInternalServerError() throws Exception {
         doThrow(externalServiceError)
                 .when(postService).deletePostById(1);

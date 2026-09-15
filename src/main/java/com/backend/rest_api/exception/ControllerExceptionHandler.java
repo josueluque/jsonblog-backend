@@ -3,11 +3,22 @@ package com.backend.rest_api.exception;
 import com.backend.rest_api.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.validation.ConstraintViolationException;
+
 @RestControllerAdvice
 public class ControllerExceptionHandler {
+    @ExceptionHandler({
+            ConstraintViolationException.class,
+            MethodArgumentNotValidException.class
+    })
+    public ResponseEntity<Void> handleValidationErrors(Exception e) {
+        return ResponseEntity.badRequest().build();
+    }
+
     @ExceptionHandler({
             PostNotFoundException.class,
             UserNotFoundException.class

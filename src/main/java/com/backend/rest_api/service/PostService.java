@@ -1,10 +1,12 @@
 package com.backend.rest_api.service;
 
+import com.backend.rest_api.client.PagedPosts;
 import com.backend.rest_api.client.PostsClient;
 import com.backend.rest_api.domain.Comment;
 import com.backend.rest_api.domain.Post;
 import com.backend.rest_api.domain.User;
 import com.backend.rest_api.domain.dto.DetailResponseDTO;
+import com.backend.rest_api.domain.dto.PageResponse;
 import com.backend.rest_api.domain.dto.PostResponseDTO;
 import com.backend.rest_api.service.impl.CommentServiceImpl;
 import org.slf4j.Logger;
@@ -22,6 +24,7 @@ public class PostService {
 
     private final PostsClient postsClient;
     private static final Logger log = LoggerFactory.getLogger(PostService.class);
+    private static final String POSTS_PATH = "/api/posts";
 
     public PostService(
             UserService userService,
@@ -33,34 +36,27 @@ public class PostService {
         this.postsClient = postsClient;
     }
 
-    public List<Post> getPosts(
+    public PageResponse<Post> getPosts(
             int page,
             int size
     ) {
-        log.info("Obteniendo todos los posteos");
-        Post[] allPostsArray = postsClient.fetchAllPosts();;
+        log.info("Obteniendo posts pagina {} (size {})", page, size);
+        PagedPosts pagedPosts = postsClient.fetchPosts(page, size);
 
-        if (allPostsArray == null || allPostsArray.length == 0){
+        Post[] posts = pagedPosts.getPosts();
+        List<Post> postsList = posts != null ? Arrays.asList(posts) : List.of();
+
+        if (postsList.isEmpty()) {
             log.info("No se encontraron posts");
-            return List.of();
         }
 
-        List<Post> postsList = Arrays.asList(allPostsArray);
+        int totalElements = pagedPosts.getTotalElements();
+        int totalPages = size > 0 ? (int) Math.ceil((double) totalElements / size) : 0;
 
-        return paginate(postsList, page, size);
-    }
+        String prev = page > 0 ? POSTS_PATH + "?page=" + (page - 1) + "&size=" + size : null;
+        String next = page + 1 < totalPages ? POSTS_PATH + "?page=" + (page + 1) + "&size=" + size : null;
 
-    private <T> List<T> paginate(List<T> list, int page, int size) {
-
-        int fromIndex = page * size;
-
-        if (fromIndex >= list.size()) {
-            log.info("Pagina {} fuera de rango para {} elementos", page, size);
-            return List.of();
-        }
-
-        int toIndex = Math.min(fromIndex + size, list.size());
-        return list.subList(fromIndex, toIndex);
+        return new PageResponse<>(page, size, totalElements, totalPages, postsList, prev, next);
     }
 
 
