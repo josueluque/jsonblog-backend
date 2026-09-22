@@ -3,7 +3,7 @@ package com.backend.rest_api;
 import com.backend.rest_api.domain.Comment;
 import com.backend.rest_api.domain.Post;
 import com.backend.rest_api.domain.dto.CommentResponseDTO;
-import com.backend.rest_api.service.CommentSerivce;
+import com.backend.rest_api.service.CommentService;
 import com.backend.rest_api.service.impl.CommentServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -127,9 +127,9 @@ class CommentServiceImplTest {
 
     @Test
     void commentService_whenInstantiated_implementsCommentServiceInterface() {
-        CommentSerivce commentService = commentService();
+        CommentService commentService = commentService();
 
-        assertThat(commentService).isInstanceOf(CommentSerivce.class);
+        assertThat(commentService).isInstanceOf(CommentService.class);
     }
 
     private Post post(int id) {

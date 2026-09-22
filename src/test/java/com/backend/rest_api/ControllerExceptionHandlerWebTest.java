@@ -3,7 +3,7 @@ package com.backend.rest_api;
 import com.backend.rest_api.controller.PostController;
 import com.backend.rest_api.exception.ExternalPostsServiceException;
 import com.backend.rest_api.exception.PostNotFoundException;
-import com.backend.rest_api.service.CommentSerivce;
+import com.backend.rest_api.service.CommentService;
 import com.backend.rest_api.service.PostService;
 import com.backend.rest_api.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -30,7 +30,7 @@ class ControllerExceptionHandlerWebTest {
     private PostService postService;
 
     @MockBean
-    private CommentSerivce commentServiceImpl;
+    private CommentService commentServiceImpl;
 
     @MockBean
     private UserService userService;
