@@ -1,5 +1,6 @@
 package com.backend.rest_api;
 
+import com.backend.rest_api.client.CommentsClient;
 import com.backend.rest_api.domain.Comment;
 import com.backend.rest_api.domain.Post;
 import com.backend.rest_api.domain.dto.CommentResponseDTO;
@@ -9,29 +10,21 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CommentServiceImplTest {
 
     @Mock
-    private RestTemplate restTemplate;
+    private CommentsClient commentsClient;
 
     private CommentServiceImpl commentService() {
-        return new CommentServiceImpl(
-                restTemplate,
-                "https://jsonplaceholder.typicode.com",
-                "/posts/{postId}/comments",
-                "/comments"
-        );
+        return new CommentServiceImpl(commentsClient);
     }
 
     private Comment comment(int id, int postId, String name, String email, String body) {
@@ -46,10 +39,10 @@ class CommentServiceImplTest {
 
     @Test
     void getCommentsByPostId_whenServiceReturnsComments_returnsList() {
-        when(restTemplate.getForObject(anyString(), eq(Comment[].class))).thenReturn(new Comment[]{
+        when(commentsClient.getCommentsByPostId(1)).thenReturn(List.of(
                 comment(1, 1, "comentario 1", "email1@test.com", "cuerpo 1"),
                 comment(2, 1, "comentario 2", "email2@test.com", "cuerpo 2")
-        });
+        ));
 
         List<Comment> result = commentService().getCommentsByPostId(1);
 
@@ -59,8 +52,8 @@ class CommentServiceImplTest {
     }
 
     @Test
-    void getCommentsByPostId_whenResponseIsNull_returnsEmptyList() {
-        when(restTemplate.getForObject(anyString(), eq(Comment[].class))).thenReturn(null);
+    void getCommentsByPostId_whenResponseIsEmpty_returnsEmptyList() {
+        when(commentsClient.getCommentsByPostId(1)).thenReturn(List.of());
 
         List<Comment> result = commentService().getCommentsByPostId(1);
 
@@ -69,12 +62,11 @@ class CommentServiceImplTest {
 
     @Test
     void getCommentsByPosts_whenMultiplePosts_groupsCommentsByPostId() {
-        when(restTemplate.getForObject(anyString(), eq(Comment[].class)))
-                .thenReturn(new Comment[]{
-                        comment(1, 1, "c1", "e1", "b1"),
-                        comment(2, 2, "c2", "e2", "b2"),
-                        comment(3, 5, "c3", "e3", "b3")
-                });
+        when(commentsClient.getComments()).thenReturn(List.of(
+                comment(1, 1, "c1", "e1", "b1"),
+                comment(2, 2, "c2", "e2", "b2"),
+                comment(3, 5, "c3", "e3", "b3")
+        ));
 
         List<Post> posts = List.of(post(1), post(2));
 
@@ -89,8 +81,8 @@ class CommentServiceImplTest {
     }
 
     @Test
-    void getCommentsByPosts_whenResponseIsNull_returnsEmptyListsForPosts() {
-        when(restTemplate.getForObject(anyString(), eq(Comment[].class))).thenReturn(null);
+    void getCommentsByPosts_whenNoComments_returnsEmptyListsForPosts() {
+        when(commentsClient.getComments()).thenReturn(List.of());
 
         Map<Integer, List<Comment>> result = commentService().getCommentsByPosts(List.of(post(1), post(2)));
 
@@ -101,8 +93,7 @@ class CommentServiceImplTest {
 
     @Test
     void getCommentsByPosts_whenPostHasNoComments_keepsEmptyListForKey() {
-        when(restTemplate.getForObject(anyString(), eq(Comment[].class)))
-                .thenReturn(new Comment[]{comment(1, 1, "c1", "e1", "b1")});
+        when(commentsClient.getComments()).thenReturn(List.of(comment(1, 1, "c1", "e1", "b1")));
 
         List<Post> posts = List.of(post(1), post(2));
 
