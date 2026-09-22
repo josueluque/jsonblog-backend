@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class PostService {
@@ -59,6 +60,29 @@ public class PostService {
     }
 
 
+    public Optional<PageResponse<DetailResponseDTO>> getPostsDetailPage(int page, int size) {
+        PageResponse<Post> postsPage = getPosts(page, size);
+
+        if (postsPage.getContent().isEmpty()) {
+            log.info("No hay posts para el detalle (pagina {}, size {})", page, size);
+            return Optional.empty();
+        }
+
+        List<Post> posts = postsPage.getContent();
+
+        Map<Integer, List<Comment>> postsComments = commentServiceImpl.getCommentsByPosts(posts);
+
+        Map<Integer, User> usersMap = userService.getUsersByPosts(posts);
+
+        List<DetailResponseDTO> postsDetail = getPostsDetail(posts, postsComments, usersMap);
+
+        PageResponse<DetailResponseDTO> response = new PageResponse<>(
+                postsPage.getPage(), postsPage.getSize(), postsPage.getTotalElements(),
+                postsPage.getTotalPages(), postsDetail, postsPage.getPrev(), postsPage.getNext());
+
+        return Optional.of(response);
+    }
+
     public PostResponseDTO toPostResponseDTO(Post post){
         PostResponseDTO dto = new PostResponseDTO();
         dto.setId(post.getId());
@@ -67,12 +91,11 @@ public class PostService {
         return dto;
     }
 
-    public DetailResponseDTO toDetailResponseDTO (
+    private DetailResponseDTO toDetailResponseDTO (
             Post post,
             Map<Integer, List<Comment>> comments,
             Map<Integer, User> usersMap)
     {
-//        log.info("Convirtiendo Post {}, user {} y comentarios a DetailResponseDTO", post.getId(), post.getUserId());
         User user = usersMap.get(post.getUserId());
         List<Comment> commentsList = comments.get(post.getId());
 
@@ -89,7 +112,7 @@ public class PostService {
         return response;
     }
 
-    public List<DetailResponseDTO> getPostsDetail(
+    private List<DetailResponseDTO> getPostsDetail(
             List<Post> posts,
             Map<Integer, List<Comment>> comments,
             Map<Integer, User> usersMap

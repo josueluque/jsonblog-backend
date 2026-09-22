@@ -1,13 +1,8 @@
 package com.backend.rest_api.controller;
 
-import com.backend.rest_api.domain.Comment;
-import com.backend.rest_api.domain.Post;
-import com.backend.rest_api.domain.User;
 import com.backend.rest_api.domain.dto.DetailResponseDTO;
 import com.backend.rest_api.domain.dto.PageResponse;
-import com.backend.rest_api.service.CommentService;
 import com.backend.rest_api.service.PostService;
-import com.backend.rest_api.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -17,8 +12,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
-import java.util.Map;
 
 import javax.validation.constraints.Min;
 
@@ -31,8 +24,6 @@ public class PostController {
     private static final Logger log = LoggerFactory.getLogger(PostService.class);
 
     private final PostService postService;
-    private final CommentService commentServiceImpl;
-    private final UserService userService;
 
     @GetMapping("/posts")
     @Operation(summary = "Obtiene detalle de publicaciones mediante paginacion utilizando datos de publicaciones, comentarios y usuarios")
@@ -46,25 +37,12 @@ public class PostController {
             @RequestParam(defaultValue = "0") @Min(0) int page,
             @RequestParam(defaultValue = "10") @Min(1) int size) {
 
-        PageResponse<Post> postsPage = postService.getPosts(page, size);
-
-        if (postsPage.getContent().isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-
-        List<Post> posts = postsPage.getContent();
-
-        Map<Integer, List<Comment>> postsComments = commentServiceImpl.getCommentsByPosts(posts);
-
-        Map<Integer, User> usersMap = userService.getUsersByPosts(posts);
-
-        List<DetailResponseDTO> postsDetail = postService.getPostsDetail(posts, postsComments, usersMap);
-
-        PageResponse<DetailResponseDTO> response = new PageResponse<>(
-                postsPage.getPage(), postsPage.getSize(), postsPage.getTotalElements(),
-                postsPage.getTotalPages(), postsDetail, postsPage.getPrev(), postsPage.getNext());
-
-        return ResponseEntity.ok(response);
+        return postService.getPostsDetailPage(page, size)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> {
+                    log.info("Sin posts: devolviendo 204 No Content");
+                    return ResponseEntity.noContent().build();
+                });
     }
 
     @DeleteMapping("/posts/{id}")
