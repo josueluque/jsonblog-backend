@@ -8,7 +8,6 @@ import com.backend.rest_api.domain.User;
 import com.backend.rest_api.domain.dto.DetailResponseDTO;
 import com.backend.rest_api.domain.dto.PageResponse;
 import com.backend.rest_api.domain.dto.PostResponseDTO;
-import com.backend.rest_api.service.impl.CommentServiceImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -20,7 +19,7 @@ import java.util.Map;
 @Service
 public class PostService {
     private final UserService userService;
-    private final CommentServiceImpl commentServiceImpl;
+    private final CommentSerivce commentServiceImpl;
 
     private final PostsClient postsClient;
     private static final Logger log = LoggerFactory.getLogger(PostService.class);
@@ -28,7 +27,7 @@ public class PostService {
 
     public PostService(
             UserService userService,
-            CommentServiceImpl commentServiceImpl,
+            CommentSerivce commentServiceImpl,
             PostsClient postsClient
     ) {
         this.userService = userService;
