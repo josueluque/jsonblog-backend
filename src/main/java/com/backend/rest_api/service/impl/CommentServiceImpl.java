@@ -4,7 +4,7 @@ import com.backend.rest_api.domain.Comment;
 import com.backend.rest_api.domain.Post;
 
 import com.backend.rest_api.domain.dto.CommentResponseDTO;
-import com.backend.rest_api.service.CommentSerivce;
+import com.backend.rest_api.service.CommentService;
 import com.backend.rest_api.service.PostService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
-public class CommentServiceImpl implements CommentSerivce {
+public class CommentServiceImpl implements CommentService {
     private final RestTemplate restTemplate;
     private final String baseUrl;
     private final String commentsByPostId;

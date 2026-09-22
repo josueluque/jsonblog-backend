@@ -19,7 +19,7 @@ import java.util.Map;
 @Service
 public class PostService {
     private final UserService userService;
-    private final CommentSerivce commentServiceImpl;
+    private final CommentService commentServiceImpl;
 
     private final PostsClient postsClient;
     private static final Logger log = LoggerFactory.getLogger(PostService.class);
@@ -27,7 +27,7 @@ public class PostService {
 
     public PostService(
             UserService userService,
-            CommentSerivce commentServiceImpl,
+            CommentService commentServiceImpl,
             PostsClient postsClient
     ) {
         this.userService = userService;
@@ -104,7 +104,7 @@ public class PostService {
     public Void deletePostById(Integer postId){
         log.info("Eliminando post con ID {}", postId);
 
-        postsClient.gestPostByPostId(postId);
+        postsClient.getPostByPostId(postId);
         postsClient.deletePostByPostId(postId);
 
         log.info("Post con ID {} eliminado correctamente", postId);

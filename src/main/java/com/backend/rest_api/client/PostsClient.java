@@ -71,7 +71,7 @@ public class PostsClient {
         return posts != null ? posts.length : 0;
     }
 
-    public Post gestPostByPostId(Integer postId){
+    public Post getPostByPostId(Integer postId){
         String url = baseUrl + postByPostId.replace("{postId}", postId.toString());
 
         try {

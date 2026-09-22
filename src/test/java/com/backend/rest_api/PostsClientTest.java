@@ -139,12 +139,12 @@ class PostsClientTest {
     }
 
     @Test
-    void gestPostByPostId_whenServiceOk_returnsPost() {
+    void getPostByPostId_whenServiceOk_returnsPost() {
         server.expect(requestTo(urlFor(POST_BY_ID_PATH.replace("{postId}", "5"))))
                 .andExpect(method(HttpMethod.GET))
                 .andRespond(withSuccess(POST_JSON, MediaType.APPLICATION_JSON));
 
-        Post post = postsClient.gestPostByPostId(5);
+        Post post = postsClient.getPostByPostId(5);
 
         assertThat(post.getId()).isEqualTo(5);
         assertThat(post.getUserId()).isEqualTo(1);
@@ -154,21 +154,21 @@ class PostsClientTest {
     }
 
     @Test
-    void gestPostByPostId_whenNotFound_throwsPostNotFoundException() {
+    void getPostByPostId_whenNotFound_throwsPostNotFoundException() {
         server.expect(requestTo(urlFor(POST_BY_ID_PATH.replace("{postId}", "999"))))
                 .andRespond(withStatus(org.springframework.http.HttpStatus.NOT_FOUND));
 
-        assertThatThrownBy(() -> postsClient.gestPostByPostId(999))
+        assertThatThrownBy(() -> postsClient.getPostByPostId(999))
                 .isInstanceOf(PostNotFoundException.class);
         server.verify();
     }
 
     @Test
-    void gestPostByPostId_whenServiceFails_throwsExternalPostsServiceException() {
+    void getPostByPostId_whenServiceFails_throwsExternalPostsServiceException() {
         server.expect(requestTo(urlFor(POST_BY_ID_PATH.replace("{postId}", "5"))))
                 .andRespond(withServerError());
 
-        assertThatThrownBy(() -> postsClient.gestPostByPostId(5))
+        assertThatThrownBy(() -> postsClient.getPostByPostId(5))
                 .isInstanceOf(ExternalPostsServiceException.class);
         server.verify();
     }

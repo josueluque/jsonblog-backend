@@ -7,7 +7,7 @@ import com.backend.rest_api.domain.dto.CommentResponseDTO;
 import java.util.List;
 import java.util.Map;
 
-public interface CommentSerivce {
+public interface CommentService {
 
     List<Comment> getCommentsByPostId(Integer postId);
 
