@@ -5,7 +5,7 @@ import com.backend.rest_api.domain.Post;
 import com.backend.rest_api.domain.User;
 import com.backend.rest_api.domain.dto.DetailResponseDTO;
 import com.backend.rest_api.domain.dto.PageResponse;
-import com.backend.rest_api.service.impl.CommentServiceImpl;
+import com.backend.rest_api.service.CommentSerivce;
 import com.backend.rest_api.service.PostService;
 import com.backend.rest_api.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,7 +31,7 @@ public class PostController {
     private static final Logger log = LoggerFactory.getLogger(PostService.class);
 
     private final PostService postService;
-    private final CommentServiceImpl commentServiceImpl;
+    private final CommentSerivce commentServiceImpl;
     private final UserService userService;
 
     @GetMapping("/posts")

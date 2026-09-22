@@ -3,9 +3,9 @@ package com.backend.rest_api;
 import com.backend.rest_api.controller.PostController;
 import com.backend.rest_api.exception.ExternalPostsServiceException;
 import com.backend.rest_api.exception.PostNotFoundException;
+import com.backend.rest_api.service.CommentSerivce;
 import com.backend.rest_api.service.PostService;
 import com.backend.rest_api.service.UserService;
-import com.backend.rest_api.service.impl.CommentServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -30,7 +30,7 @@ class ControllerExceptionHandlerWebTest {
     private PostService postService;
 
     @MockBean
-    private CommentServiceImpl commentServiceImpl;
+    private CommentSerivce commentServiceImpl;
 
     @MockBean
     private UserService userService;

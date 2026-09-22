@@ -5,7 +5,7 @@ import com.backend.rest_api.client.PostsClient;
 import com.backend.rest_api.domain.Post;
 import com.backend.rest_api.domain.dto.PageResponse;
 import com.backend.rest_api.domain.dto.PostResponseDTO;
-import com.backend.rest_api.service.impl.CommentServiceImpl;
+import com.backend.rest_api.service.CommentSerivce;
 import com.backend.rest_api.service.PostService;
 import com.backend.rest_api.service.UserService;
 import org.junit.jupiter.api.Test;
@@ -25,7 +25,7 @@ class PostServiceTest {
     private UserService userService;
 
     @Mock
-    private CommentServiceImpl commentServiceImpl;
+    private CommentSerivce commentServiceImpl;
 
     @Mock
     private PostsClient postsClient;
