@@ -3,6 +3,7 @@ package com.backend.rest_api;
 import com.backend.rest_api.domain.Comment;
 import com.backend.rest_api.domain.Post;
 import com.backend.rest_api.domain.dto.CommentResponseDTO;
+import com.backend.rest_api.service.CommentSerivce;
 import com.backend.rest_api.service.impl.CommentServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -122,6 +123,13 @@ class CommentServiceImplTest {
         assertThat(dto.getName()).isEqualTo("nombre");
         assertThat(dto.getEmail()).isEqualTo("email@test.com");
         assertThat(dto.getBody()).isEqualTo("cuerpo");
+    }
+
+    @Test
+    void commentService_whenInstantiated_implementsCommentServiceInterface() {
+        CommentSerivce commentService = commentService();
+
+        assertThat(commentService).isInstanceOf(CommentSerivce.class);
     }
 
     private Post post(int id) {
