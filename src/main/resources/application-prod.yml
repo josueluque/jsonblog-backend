@@ -1,0 +1,7 @@
+# Perfil de produccion
+# Toda la configuracion sensible/variable se toma de variables de entorno
+# (ver defaults en application.yml). Logging acotado para produccion.
+logging:
+  level:
+    root: WARN
+    com.backend.rest_api: INFO
