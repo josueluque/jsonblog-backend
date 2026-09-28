@@ -11,7 +11,7 @@ centralizado de errores y documentacion interactiva.
 - Endpoint `GET /api/posts` con paginacion y enriquecimiento: cada post se devuelve junto con sus comentarios y los datos del usuario autor.
 - Endpoint `DELETE /api/posts/{id}` para eliminar una publicacion (simulado contra JSONPlaceholder).
 - Manejo centralizado de errores con `@RestControllerAdvice` (HTTP 404 y 500).
-- URLs del servicio externo configurables via `application.properties`.
+- URLs del servicio externo, timeouts y cache configurables por configuracion externa (Spring properties / variables de entorno).
 - Documentacion interactiva con Swagger UI.
 - Cobertura de tests unitarios y de integracion (JUnit 5, Mockito, MockRestServiceServer, MockMvc).
 
@@ -20,13 +20,13 @@ centralizado de errores y documentacion interactiva.
 | Tecnologia        | Uso                                                        |
 |-------------------|------------------------------------------------------------|
 | Java 17           | Lenguaje principal                                         |
-| Spring Boot 2.7.2 | Framework de la aplicacion                                 |
+| Spring Boot 3.5.6 | Framework de la aplicacion                                 |
 | Maven + mvnw      | Gestion de dependencias y build (con Maven Wrapper)        |
 | Spring Web / MVC  | Endpoints REST                                             |
 | RestTemplate      | Cliente HTTP para consumir JSONPlaceholder                 |
 | Jackson / JSON    | Serializacion y deserializacion                            |
 | Lombok            | Reduccion de codigo repetitivo                              |
-| Springdoc OpenAPI | Documentacion y pruebas con Swagger UI                     |
+| Springdoc OpenAPI 2 | Documentacion y pruebas con Swagger UI (`springdoc-openapi-starter-webmvc-ui`) |
 | Spring Boot Test  | JUnit 5, Mockito, MockRestServiceServer y MockMvc          |
 
 ## Arquitectura
@@ -81,8 +81,10 @@ La aplicacion queda disponible en `http://localhost:8080`.
 Swagger UI (documentacion interactiva de la API):
 
 ```
-http://localhost:8080/swagger-ui.html
+http://localhost:8080/swagger-ui/index.html
 ```
+
+La definicion OpenAPI en JSON esta disponible en `http://localhost:8080/v3/api-docs`.
 
 ## Endpoints
 
@@ -103,6 +105,12 @@ curl -X GET "http://localhost:8080/api/posts?page=0&size=10"
 - `204 No Content` cuando no hay posts para la pagina solicitada.
 - `400 Bad Request` si `page` o `size` no cumplen las restricciones.
 - `500 Internal Server Error` si falla la comunicacion con el servicio externo.
+
+> **Nota sobre el `204`:** hoy una pagina sin resultados (por ejemplo, `page`
+> mas alla del total) devuelve `204 No Content` sin cuerpo. Esto es ambiguo para
+> los clientes, ya que no permite distinguir "pagina vacia" de "sin datos" ni
+> incluye los metadatos de paginacion. Comportamiento conocido; una alternativa
+> mas explicita seria devolver `200 OK` con `content: []` y los metadatos.
 
 El paginado se resuelve en el origen: la API consulta a JSONPlaceholder con `_page`/`_limit` y propaga `X-Total-Count`, devolviendo metadatos de paginacion y links `prev`/`next` (relativos).
 
