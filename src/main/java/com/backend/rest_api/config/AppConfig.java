@@ -6,6 +6,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.Duration;
+
 @Configuration
 public class AppConfig {
 
@@ -15,8 +17,8 @@ public class AppConfig {
             @Value("${http.client.read-timeout:5000}") int readTimeout
     ) {
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
-        requestFactory.setConnectTimeout(connectTimeout);
-        requestFactory.setReadTimeout(readTimeout);
+        requestFactory.setConnectTimeout(Duration.ofMillis(connectTimeout));
+        requestFactory.setReadTimeout(Duration.ofMillis(readTimeout));
 
         return new RestTemplate(requestFactory);
     }
