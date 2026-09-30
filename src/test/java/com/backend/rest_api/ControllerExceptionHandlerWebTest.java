@@ -23,7 +23,9 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -106,6 +108,22 @@ class ControllerExceptionHandlerWebTest {
         mockMvc.perform(get("/api/posts").param("page", "-1"))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(""));
+    }
+
+    @Test
+    void getPostsDetail_whenSizeExceedsMax_returnsBadRequest() throws Exception {
+        mockMvc.perform(get("/api/posts").param("size", "1000"))
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(""));
+    }
+
+    @Test
+    void corsPreflight_fromAllowedOrigin_isAllowed() throws Exception {
+        mockMvc.perform(options("/api/posts")
+                        .header("Origin", "http://localhost:3000")
+                        .header("Access-Control-Request-Method", "GET"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Access-Control-Allow-Origin", "http://localhost:3000"));
     }
 
     @Test

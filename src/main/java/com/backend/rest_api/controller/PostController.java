@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 
 @RestController
@@ -35,7 +36,7 @@ public class PostController {
     })
     public ResponseEntity<PageResponse<DetailResponseDTO>> getPostsDetail(
             @RequestParam(defaultValue = "0") @Min(0) int page,
-            @RequestParam(defaultValue = "10") @Min(1) int size) {
+            @RequestParam(defaultValue = "10") @Min(1) @Max(100) int size) {
 
         return postService.getPostsDetailPage(page, size)
                 .map(ResponseEntity::ok)
