@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: jsonblog-backend
+  # Perfil activo por defecto (override con la variable de entorno SPRING_PROFILES_ACTIVE)
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+# Timeouts del cliente HTTP (ms). Externalizados via variables de entorno.
+http:
+  client:
+    connect-timeout: ${HTTP_CLIENT_CONNECT_TIMEOUT:5000}
+    read-timeout: ${HTTP_CLIENT_READ_TIMEOUT:5000}
+
+# Servicio externo (JSONPlaceholder)
+jsonplaceholder:
+  base-url: ${JSONPLACEHOLDER_BASE_URL:https://jsonplaceholder.typicode.com}
+  posts: ${JSONPLACEHOLDER_POSTS:/posts}
+  postByPost: ${JSONPLACEHOLDER_POST_BY_POST:/posts/{postId}}
+  commentsByPostId: ${JSONPLACEHOLDER_COMMENTS_BY_POST_ID:/posts/{postId}/comments}
+  comments: ${JSONPLACEHOLDER_COMMENTS:/comments}
+  usersByUserId: ${JSONPLACEHOLDER_USERS_BY_USER_ID:/users/{userId}}
+
+# Cache (Caffeine). Externalizado via variables de entorno.
+cache:
+  maximum-size: ${CACHE_MAXIMUM_SIZE:100}
+  expire-after-write-minutes: ${CACHE_EXPIRE_AFTER_WRITE_MINUTES:10}

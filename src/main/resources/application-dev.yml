@@ -1,0 +1,9 @@
+# Perfil de desarrollo
+# Logging verboso para depurar la orquestacion y las llamadas al servicio externo.
+logging:
+  level:
+    com.backend.rest_api: DEBUG
+
+# En desarrollo el cache expira mas rapido para reflejar cambios sin reiniciar.
+cache:
+  expire-after-write-minutes: ${CACHE_EXPIRE_AFTER_WRITE_MINUTES:2}
