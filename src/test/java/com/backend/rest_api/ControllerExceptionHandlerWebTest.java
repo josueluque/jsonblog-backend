@@ -46,7 +46,10 @@ class ControllerExceptionHandlerWebTest {
 
         mockMvc.perform(get("/api/posts"))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().string(""));
+                .andExpect(jsonPath("$.status").value(500))
+                .andExpect(jsonPath("$.error").value("Internal Server Error"))
+                .andExpect(jsonPath("$.path").value("/api/posts"))
+                .andExpect(jsonPath("$.requestId").exists());
     }
 
     @Test
@@ -91,21 +94,24 @@ class ControllerExceptionHandlerWebTest {
     void getPostsDetail_whenSizeIsZero_returnsBadRequest() throws Exception {
         mockMvc.perform(get("/api/posts").param("size", "0"))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string(""));
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.requestId").exists());
     }
 
     @Test
     void getPostsDetail_whenSizeIsNegative_returnsBadRequest() throws Exception {
         mockMvc.perform(get("/api/posts").param("size", "-5"))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string(""));
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.requestId").exists());
     }
 
     @Test
     void getPostsDetail_whenPageIsNegative_returnsBadRequest() throws Exception {
         mockMvc.perform(get("/api/posts").param("page", "-1"))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string(""));
+                .andExpect(jsonPath("$.status").value(400))
+                .andExpect(jsonPath("$.requestId").exists());
     }
 
     @Test
@@ -115,7 +121,9 @@ class ControllerExceptionHandlerWebTest {
 
         mockMvc.perform(delete("/api/posts/1"))
                 .andExpect(status().isInternalServerError())
-                .andExpect(content().string(""));
+                .andExpect(jsonPath("$.status").value(500))
+                .andExpect(jsonPath("$.path").value("/api/posts/1"))
+                .andExpect(jsonPath("$.requestId").exists());
     }
 
     @Test
@@ -125,6 +133,8 @@ class ControllerExceptionHandlerWebTest {
 
         mockMvc.perform(delete("/api/posts/999"))
                 .andExpect(status().isNotFound())
-                .andExpect(content().string(""));
+                .andExpect(jsonPath("$.status").value(404))
+                .andExpect(jsonPath("$.path").value("/api/posts/999"))
+                .andExpect(jsonPath("$.requestId").exists());
     }
 }
