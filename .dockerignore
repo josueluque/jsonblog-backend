@@ -1,0 +1,18 @@
+# Artefactos de build (se generan dentro de la imagen)
+target/
+
+# Git y metadatos
+.git/
+.gitignore
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Herramientas locales / temporales
+.opencode/
+*.stackdump
+
+# Plan/config local de Claude
+.claude/
