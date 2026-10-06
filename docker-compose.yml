@@ -1,0 +1,16 @@
+services:
+  app:
+    build: .
+    image: jsonblog-backend:latest
+    container_name: jsonblog-backend
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      # Configuracion externalizable (defaults en application.yml):
+      # JSONPLACEHOLDER_BASE_URL: https://jsonplaceholder.typicode.com
+      # HTTP_CLIENT_CONNECT_TIMEOUT: "5000"
+      # HTTP_CLIENT_READ_TIMEOUT: "5000"
+      # CACHE_MAXIMUM_SIZE: "100"
+      # CACHE_EXPIRE_AFTER_WRITE_MINUTES: "10"
+    restart: unless-stopped
