@@ -18,7 +18,7 @@ import java.util.Map;
 public class UserService {
 
     private final UsersClient usersClient;
-    private static final Logger log = LoggerFactory.getLogger(PostService.class);
+    private static final Logger log = LoggerFactory.getLogger(UserService.class);
 
     public UserService(
             UsersClient usersClient

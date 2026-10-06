@@ -41,6 +41,7 @@ public class PostsClient {
         try {
             return restTemplate.getForObject(baseUrl + allposts, Post[].class);
         } catch (RestClientException e){
+            log.error("Fallo al obtener todos los posts desde {}: {}", baseUrl + allposts, e.getMessage());
             throw new ExternalPostsServiceException(e);
         }
     }
@@ -55,6 +56,7 @@ public class PostsClient {
             Post[] posts = response.getBody();
             return new PagedPosts(posts, extractTotalElements(response, posts));
         } catch (RestClientException e){
+            log.error("Fallo al obtener posts paginados (page={}, size={}): {}", page, size, e.getMessage());
             throw new ExternalPostsServiceException(e);
         }
     }
@@ -77,8 +79,10 @@ public class PostsClient {
         try {
             return restTemplate.getForObject(url, Post.class);
         } catch (HttpClientErrorException.NotFound e) {
+            log.warn("Post {} no encontrado en el servicio externo", postId);
             throw new PostNotFoundException(postId);
         } catch (RestClientException e){
+            log.error("Fallo al obtener el post {}: {}", postId, e.getMessage());
             throw new ExternalPostsServiceException(e);
         }
     }
@@ -89,6 +93,7 @@ public class PostsClient {
         try {
             restTemplate.delete(url);
         } catch (RestClientException e){
+            log.error("Fallo al eliminar el post {}: {}", postId, e.getMessage());
             throw new DeletePostException(postId, e);
         }
         return null;

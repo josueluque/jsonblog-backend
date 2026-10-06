@@ -21,7 +21,7 @@ import jakarta.validation.constraints.Min;
 @Validated
 public class PostController {
 
-    private static final Logger log = LoggerFactory.getLogger(PostService.class);
+    private static final Logger log = LoggerFactory.getLogger(PostController.class);
 
     private final PostService postService;
 
