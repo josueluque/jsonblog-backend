@@ -5,6 +5,17 @@ spring:
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
 
+# Hardening del servidor: limites de tamano de request (externalizables por env var)
+server:
+  max-http-request-header-size: ${SERVER_MAX_HTTP_HEADER_SIZE:8KB}
+  tomcat:
+    max-swallow-size: ${SERVER_TOMCAT_MAX_SWALLOW_SIZE:2MB}
+    max-http-form-post-size: ${SERVER_TOMCAT_MAX_FORM_POST_SIZE:256KB}
+
+# CORS: origenes permitidos (lista separada por comas)
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:3000}
+
 # Timeouts del cliente HTTP (ms). Externalizados via variables de entorno.
 http:
   client:
